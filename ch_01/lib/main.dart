@@ -42,15 +42,17 @@ class HelloWorldApp extends StatelessWidget {
                             ),
                             Padding(
                               padding: EdgeInsets.all(15),
-                              child: 
-                              Container(
-                                decoration: BoxDecoration(boxShadow: [BoxShadow(color: Colors.blue, blurRadius: 10, spreadRadius: 2)]),
-                                child:Image.network(
-                                'https://images.freeimages.com/images/large-previews/eaa/the-beach-1464354.jpg',
-                                height: 350,
-                                
-                              ))
-                              ,
+                              child: Container(
+                                  decoration: BoxDecoration(boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.blue,
+                                        blurRadius: 10,
+                                        spreadRadius: 2)
+                                  ]),
+                                  child: Image.network(
+                                    'https://images.freeimages.com/images/large-previews/eaa/the-beach-1464354.jpg',
+                                    height: 350,
+                                  )),
                             ),
                             Padding(
                               padding: EdgeInsets.all(15),
