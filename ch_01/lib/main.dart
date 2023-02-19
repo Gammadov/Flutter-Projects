@@ -59,8 +59,10 @@ class HelloWorldApp extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.all(15),
                               child: ElevatedButton(
-                                  child: const Text('Contact Us'),
-                                  onPressed: () => debugPrint('Contact us')),
+                                child: const Text('Contact Us'),
+                                // onPressed: () => debugPrint('Contact us'),
+                                onPressed: () => contactUs(context),
+                              ),
                             ),
                           ],
                         )))))));
