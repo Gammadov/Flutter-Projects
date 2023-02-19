@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(new HelloWorldApp());
+void main() => runApp(const HelloWorldApp());
 
 class HelloWorldApp extends StatelessWidget {
+  const HelloWorldApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -10,18 +12,18 @@ class HelloWorldApp extends StatelessWidget {
         title: "Hello World",
         home: Scaffold(
             appBar: AppBar(
-              title: Text("Hello World Travel App"),
+              title: const Text("Hello World Travel App"),
               backgroundColor: Colors.deepPurple,
             ),
             body: Builder(
                 builder: (context) => SingleChildScrollView(
                     child: Padding(
-                        padding: EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(20),
                         child: Center(
                             child: Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               child: Text(
                                 'Hello World Travel',
                                 style: TextStyle(
@@ -30,7 +32,7 @@ class HelloWorldApp extends StatelessWidget {
                                     color: Colors.blue[800]),
                               ),
                             ),
-                            Padding(
+                            const Padding(
                               padding: EdgeInsets.all(5),
                               child: Text(
                                 'Discover the World',
@@ -41,9 +43,9 @@ class HelloWorldApp extends StatelessWidget {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(15),
+                              padding: const EdgeInsets.all(15),
                               child: Container(
-                                  decoration: BoxDecoration(boxShadow: [
+                                  decoration: const BoxDecoration(boxShadow: [
                                     BoxShadow(
                                         color: Colors.blue,
                                         blurRadius: 10,
@@ -55,10 +57,10 @@ class HelloWorldApp extends StatelessWidget {
                                   )),
                             ),
                             Padding(
-                              padding: EdgeInsets.all(15),
-                              child: RaisedButton(
-                                  child: Text('Contact Us'),
-                                  onPressed: () => print('Contact us')),
+                              padding: const EdgeInsets.all(15),
+                              child: ElevatedButton(
+                                  child: const Text('Contact Us'),
+                                  onPressed: () => debugPrint('Contact us')),
                             ),
                           ],
                         )))))));
@@ -69,11 +71,11 @@ class HelloWorldApp extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Contact Us'),
-          content: Text('Mail us at hello@world.com'),
+          title: const Text('Contact Us'),
+          content: const Text('Mail us at hello@world.com'),
           actions: <Widget>[
-            FlatButton(
-              child: Text('Close'),
+            TextButton(
+              child: const Text('Close'),
               onPressed: () => Navigator.of(context).pop(),
             )
           ],
