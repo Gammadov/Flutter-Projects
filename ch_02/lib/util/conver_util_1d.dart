@@ -11,10 +11,11 @@ class Conversion {
     'pounds (lbs)' : 6,
     'ounces' : 7,
   };
+
   //builds the list containing the formulas (x + y*width)
-  List<double> formulas;
+  late List<double> formulas;
   Conversion() {
-    formulas = List<double>();
+    formulas = [];
     //row 1
     formulas.insert(0+0*w, 1);
     formulas.insert(1+0*w, 0.001);
@@ -90,8 +91,8 @@ class Conversion {
   }
 
   double convert(double value, String from, String to) {
-    int nFrom = measures[from];
-    int nTo = measures[to];
+    int nFrom = measures[from]!;
+    int nTo = measures[to]!;
     double multiplier = formulas[nTo+w*nFrom];
     return value * multiplier;
   }

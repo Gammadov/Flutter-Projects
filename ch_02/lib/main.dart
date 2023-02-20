@@ -2,23 +2,28 @@ import 'package:flutter/material.dart';
 import 'util/conver_util.dart';
 
 void main() {
-  runApp(MaterialApp(
-    title: 'Measures Converter',
-    home: MyApp(),
-  ));
+  runApp(
+    const MaterialApp(
+      title: 'Measures Converter',
+      home: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
-  MyAppState createState() => MyAppState();
+  State<MyApp> createState() => _MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class _MyAppState extends State<MyApp> {
   double _numberFrom = 0;
-  String _startMeasure ;
-  String _convertedMeasure ;
+  String? _startMeasure;
+  String? _convertedMeasure;
   double _result = 0;
   String _resultMessage = '';
+
   @override
   Widget build(BuildContext context) {
     double sizeX = MediaQuery.of(context).size.width;
@@ -32,7 +37,7 @@ class MyAppState extends State<MyApp> {
       color: Colors.grey[700],
     );
 
-    final spacer = Padding(padding: EdgeInsets.only(bottom: sizeY/40));
+    final spacer = Padding(padding: EdgeInsets.only(bottom: sizeY / 40));
     final List<String> _measures = [
       'meters',
       'kilometers',
@@ -45,20 +50,24 @@ class MyAppState extends State<MyApp> {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Measures Converter'),
+        title: const Text('Measures Converter'),
       ),
       body: Container(
-        width: sizeX, 
-        padding: EdgeInsets.all(sizeX/20),
-        child: SingleChildScrollView(child: Column(
+        width: sizeX,
+        padding: EdgeInsets.all(sizeX / 20),
+        child: SingleChildScrollView(
+            child: Column(
           children: [
-            Text('Value', style: labelStyle,),
+            Text(
+              'Value',
+              style: labelStyle,
+            ),
             spacer,
             TextField(
               style: inputStyle,
-              decoration: InputDecoration( 
-                    hintText: "Please insert the measure to be converted", 
-                  ), 
+              decoration: const InputDecoration(
+                hintText: "Please insert the measure to be converted",
+              ),
               onChanged: (text) {
                 setState(() {
                   _numberFrom = double.parse(text);
@@ -66,7 +75,10 @@ class MyAppState extends State<MyApp> {
               },
             ),
             spacer,
-            Text('From', style: labelStyle,),
+            Text(
+              'From',
+              style: labelStyle,
+            ),
             spacer,
             DropdownButton(
               isExpanded: true,
@@ -75,15 +87,21 @@ class MyAppState extends State<MyApp> {
               items: _measures.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value, style: inputStyle,),
+                  child: Text(
+                    value,
+                    style: inputStyle,
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
-                onStartMeasureChanged(value);
+                onStartMeasureChanged(value!);
               },
             ),
             spacer,
-            Text('To', style: labelStyle,),
+            Text(
+              'To',
+              style: labelStyle,
+            ),
             spacer,
             DropdownButton(
               isExpanded: true,
@@ -92,18 +110,26 @@ class MyAppState extends State<MyApp> {
               items: _measures.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value, style: inputStyle,),
+                  child: Text(
+                    value,
+                    style: inputStyle,
+                  ),
                 );
               }).toList(),
               onChanged: (value) {
-                onConvertedMeasureChanged(value);
+                onConvertedMeasureChanged(value!);
               },
             ),
             spacer,
-            RaisedButton(child:Text('Convert', style: inputStyle),
-              onPressed: ()=>convert(),),
+            ElevatedButton(
+              child: Text('Convert', style: inputStyle),
+              onPressed: () => convert(),
+            ),
             spacer,
-            Text(_resultMessage, style: labelStyle,)
+            Text(
+              _resultMessage,
+              style: labelStyle,
+            )
           ],
         )),
       ),
@@ -115,6 +141,7 @@ class MyAppState extends State<MyApp> {
       _startMeasure = value;
     });
   }
+
   void onConvertedMeasureChanged(String value) {
     setState(() {
       _convertedMeasure = value;
@@ -122,21 +149,23 @@ class MyAppState extends State<MyApp> {
   }
 
   void convert() {
-    if (_startMeasure.isEmpty || _convertedMeasure.isEmpty || _numberFrom==0) {
+    if (_startMeasure!.isEmpty ||
+        _convertedMeasure!.isEmpty ||
+        _numberFrom == 0) {
       return;
     }
     Conversion c = Conversion();
-    double result = c.convert(_numberFrom, _startMeasure, _convertedMeasure);
-    setState(() {
-      _result = result;
-      if (result == 0) {
-        _resultMessage = 'This conversion cannot be performed';
-      }
-      else {
-        _resultMessage = '${_numberFrom.toString()} $_startMeasure are ${_result.toString()} $_convertedMeasure';   
-      }
-
-    });
+    double result = c.convert(_numberFrom, _startMeasure!, _convertedMeasure!);
+    setState(
+      () {
+        _result = result;
+        if (result == 0) {
+          _resultMessage = 'This conversion cannot be performed';
+        } else {
+          _resultMessage =
+              '${_numberFrom.toString()} $_startMeasure are ${_result.toString()} $_convertedMeasure';
+        }
+      },
+    );
   }
-
 }
