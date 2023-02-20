@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'util/conver_util.dart';
 
 void main() {
@@ -19,8 +20,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   double _numberFrom = 0;
-  String? _startMeasure;
-  String? _convertedMeasure;
+  String _startMeasure = '';
+  String _convertedMeasure = '';
   double _result = 0;
   String _resultMessage = '';
 
@@ -37,8 +38,8 @@ class _MyAppState extends State<MyApp> {
       color: Colors.grey[700],
     );
 
-    final spacer = Padding(padding: EdgeInsets.only(bottom: sizeY / 40));
-    final List<String> _measures = [
+    final spacer = SizedBox(height: sizeY / 40);
+    final List<String> measures = [
       'meters',
       'kilometers',
       'grams',
@@ -68,10 +69,22 @@ class _MyAppState extends State<MyApp> {
               decoration: const InputDecoration(
                 hintText: "Please insert the measure to be converted",
               ),
-              onChanged: (text) {
-                setState(() {
-                  _numberFrom = double.parse(text);
-                });
+              // keyboardType: TextInputType.number,
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+
+              // Only numbers can be entered
+              inputFormatters: <TextInputFormatter>[
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
+                ),
+              ],
+              onSubmitted: (text) {
+                if (text.isNotEmpty) {
+                  setState(() {
+                    _numberFrom = double.parse(text);
+                  });
+                }
               },
             ),
             spacer,
@@ -83,8 +96,8 @@ class _MyAppState extends State<MyApp> {
             DropdownButton(
               isExpanded: true,
               style: inputStyle,
-              value: _startMeasure,
-              items: _measures.map((String value) {
+              value: _startMeasure.isNotEmpty ? _startMeasure : null,
+              items: measures.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -106,8 +119,8 @@ class _MyAppState extends State<MyApp> {
             DropdownButton(
               isExpanded: true,
               style: inputStyle,
-              value: _convertedMeasure,
-              items: _measures.map((String value) {
+              value: _convertedMeasure.isNotEmpty ? _convertedMeasure : null,
+              items: measures.map((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(
@@ -122,7 +135,10 @@ class _MyAppState extends State<MyApp> {
             ),
             spacer,
             ElevatedButton(
-              child: Text('Convert', style: inputStyle),
+              child: const Text(
+                'Convert',
+                style: TextStyle(fontSize: 20),
+              ),
               onPressed: () => convert(),
             ),
             spacer,
@@ -149,13 +165,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   void convert() {
-    if (_startMeasure!.isEmpty ||
-        _convertedMeasure!.isEmpty ||
+    if (_startMeasure.isEmpty ||
+        _convertedMeasure.isEmpty ||
         _numberFrom == 0) {
       return;
     }
     Conversion c = Conversion();
-    double result = c.convert(_numberFrom, _startMeasure!, _convertedMeasure!);
+    double result = c.convert(_numberFrom, _startMeasure, _convertedMeasure);
     setState(
       () {
         _result = result;
