@@ -10,14 +10,16 @@ class MyConversionApp extends StatefulWidget {
 }
 
 class _MyConversionAppState extends State<MyConversionApp> {
-  String _textNumber = '';
+  double _inputNumber = 0;
   String _answer = '';
   Unit? _startUnit;
   Unit? _convertedUnit;
 
-  final Converter converter = Converter();
+  final _numberController = TextEditingController();
 
-  final Map<Unit, String> measures = {
+  final Converter _converter = Converter();
+
+  final Map<Unit, String> _measures = {
     Unit.meters: 'meters',
     Unit.kilometers: 'kilometers',
     Unit.grams: 'grams',
@@ -28,9 +30,10 @@ class _MyConversionAppState extends State<MyConversionApp> {
     Unit.ounces: 'ounces',
   };
 
-  final TextStyle inputStyle = TextStyle(fontSize: 20, color: Colors.blue[900]);
+  final TextStyle _inputStyle =
+      TextStyle(fontSize: 20, color: Colors.blue[900]);
 
-  final TextStyle labelStyle = TextStyle(
+  final TextStyle _labelStyle = TextStyle(
     fontSize: 24,
     color: Colors.grey[700],
   );
@@ -53,51 +56,57 @@ class _MyConversionAppState extends State<MyConversionApp> {
           children: [
             Text(
               'Value',
-              style: labelStyle,
+              style: _labelStyle,
             ),
             spacer,
-            TextField(
-              style: inputStyle,
-              decoration: const InputDecoration(
-                hintText: "Please insert the measure to be converted",
-              ),
-              // keyboardType: TextInputType.number,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-
-              // Only numbers can be entered
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                  RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
-                ),
-              ],
-              onChanged: (text) {
-                if (text.isNotEmpty) {
+            Focus(
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
                   setState(
                     () {
-                      _textNumber = text;
+                      _inputNumber = double.parse(_numberController.text);
+                      _numberController.text = _inputNumber.toString();
                     },
                   );
                 }
               },
+              child: TextField(
+                controller: _numberController,
+                style: _inputStyle,
+                decoration: const InputDecoration(
+                  hintText: "Please insert the measure to be converted",
+                ),
+                // keyboardType: TextInputType.number,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
+                  ),
+                ],
+                onTap: () {
+                  _inputNumber = 0;
+                  _numberController.clear();
+                },
+              ),
             ),
             spacer,
             Text(
               'From',
-              style: labelStyle,
+              style: _labelStyle,
             ),
             spacer,
             DropdownButton<Unit>(
               isExpanded: true,
-              style: inputStyle,
+              style: _inputStyle,
               value: _startUnit,
               items: List.generate(Unit.values.length, (index) {
                 final unit = Unit.values[index];
                 return DropdownMenuItem<Unit>(
                   value: unit,
                   child: Text(
-                    measures[unit]!,
-                    style: inputStyle,
+                    _measures[unit]!,
+                    style: _inputStyle,
                   ),
                 );
               }),
@@ -108,15 +117,15 @@ class _MyConversionAppState extends State<MyConversionApp> {
             spacer,
             Text(
               'To',
-              style: labelStyle,
+              style: _labelStyle,
             ),
             spacer,
             DropdownButton<Unit>(
               isExpanded: true,
-              style: inputStyle,
+              style: _inputStyle,
               value: _convertedUnit,
               items: availableItems(
-                converter: converter,
+                converter: _converter,
                 start: _startUnit ?? Unit.meters,
               ),
               onChanged: _startUnit == null
@@ -133,7 +142,7 @@ class _MyConversionAppState extends State<MyConversionApp> {
                 style: TextStyle(fontSize: 20),
               ),
               onPressed: () => convert(
-                converter: converter,
+                converter: _converter,
                 startUnit: _startUnit,
                 convertedUnit: _convertedUnit,
               ),
@@ -141,7 +150,7 @@ class _MyConversionAppState extends State<MyConversionApp> {
             spacer,
             Text(
               _answer,
-              style: labelStyle,
+              style: _labelStyle,
             )
           ],
         )),
@@ -169,12 +178,18 @@ class _MyConversionAppState extends State<MyConversionApp> {
         return DropdownMenuItem<Unit>(
           value: available[index],
           child: Text(
-            measures[available[index]]!,
-            style: inputStyle,
+            _measures[available[index]]!,
+            style: _inputStyle,
           ),
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _numberController.dispose();
+    super.dispose();
   }
 
   void onConvertedMeasureChanged(Unit value) {
@@ -188,19 +203,19 @@ class _MyConversionAppState extends State<MyConversionApp> {
     required Unit? startUnit,
     required Unit? convertedUnit,
   }) {
-    if (_textNumber.isEmpty || startUnit == null || convertedUnit == null) {
+    if (_inputNumber == 0 || startUnit == null || convertedUnit == null) {
       return;
     }
 
     double result = converter.convert(
-        value: double.parse(_textNumber),
+        value: _inputNumber,
         startUnit: startUnit,
         convertedUnit: convertedUnit);
     if (result <= 0) {
       setState(() => _answer = 'This conversion cannot be performed');
     } else {
       setState(() => _answer =
-          '$_textNumber ${measures[startUnit]} are $result ${measures[convertedUnit]}');
+          '$_inputNumber ${_measures[startUnit]} are $result ${_measures[convertedUnit]}');
     }
   }
 }

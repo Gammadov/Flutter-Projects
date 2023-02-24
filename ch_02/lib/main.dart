@@ -26,6 +26,13 @@ class _MyAppState extends State<MyApp> {
   String _convertedMeasure = '';
   double _result = 0;
   String _resultMessage = '';
+  final _numberController = TextEditingController();
+
+  @override
+  void dispose() {
+    _numberController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,28 +73,38 @@ class _MyAppState extends State<MyApp> {
               style: labelStyle,
             ),
             spacer,
-            TextField(
-              style: inputStyle,
-              decoration: const InputDecoration(
-                hintText: "Please insert the measure to be converted",
-              ),
-              // keyboardType: TextInputType.number,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
-
-              // Only numbers can be entered
-              inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.allow(
-                  RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
-                ),
-              ],
-              onSubmitted: (text) {
-                if (text.isNotEmpty) {
-                  setState(() {
-                    _numberFrom = double.parse(text);
-                  });
+            Focus(
+              onFocusChange: (hasFocus) {
+                if (!hasFocus) {
+                  setState(
+                    () {
+                      _numberFrom = double.parse(_numberController.text);
+                      _numberController.text = _numberFrom.toString();
+                    },
+                  );
                 }
               },
+              child: TextField(
+                controller: _numberController,
+                style: inputStyle,
+                decoration: const InputDecoration(
+                  hintText: "Please insert the measure to be converted",
+                ),
+                // keyboardType: TextInputType.number,
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
+
+                // Only numbers can be entered
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
+                  ),
+                ],
+                onTap: () {
+                  _numberFrom = 0;
+                  _numberController.clear();
+                },
+              ),
             ),
             spacer,
             Text(
