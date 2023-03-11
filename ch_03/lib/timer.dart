@@ -5,9 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CountDownTimer {
   double _radius = 1;
   bool _isActive = true;
-  Timer timer;
-  Duration _time;
-  Duration _fullTime;
+  Timer? timer;
+  late Duration _time;
+  late Duration _fullTime;
   int work = 30;
   int shortBreak = 5;
   int longBreak = 20;
@@ -41,9 +41,9 @@ class CountDownTimer {
 
   Future readSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    work = prefs.getInt('workTime') == null ? 30 : prefs.getInt('workTime');
-    shortBreak = prefs.getInt('shortBreak') == null ? 30 : prefs.getInt('shortBreak');
-    longBreak = prefs.getInt('longBreak') == null ? 30 : prefs.getInt('longBreak');
+    work = prefs.getInt('workTime') == null ? 30 : prefs.getInt('workTime')!;
+    shortBreak = prefs.getInt('shortBreak') == null ? 30 : prefs.getInt('shortBreak')!;
+    longBreak = prefs.getInt('longBreak') == null ? 30 : prefs.getInt('longBreak')!;
   }
   
   void stopTimer() {
