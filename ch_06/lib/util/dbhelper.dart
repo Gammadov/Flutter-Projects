@@ -5,7 +5,7 @@ import '../models/shopping_list.dart';
 
 class DbHelper {
   final int version = 1;
-  Database db;
+  Database? db;
 
   static final DbHelper _dbHelper = DbHelper._internal();
   DbHelper._internal();
@@ -15,11 +15,11 @@ class DbHelper {
 
   Future testDb() async {
     db = await openDb();
-    await db.execute('INSERT INTO lists VALUES (0, "Fruit", 2)');
-    await db.execute(
+    await db!.execute('INSERT INTO lists VALUES (0, "Fruit", 2)');
+    await db!.execute(
         'INSERT INTO items VALUES (0, 0, "Apples", "2 Kg", "Better if they are green")');
-    List lists = await db.rawQuery('select * from lists');
-    List items = await db.rawQuery('select * from items');
+    List lists = await db!.rawQuery('select * from lists');
+    List items = await db!.rawQuery('select * from items');
     print(lists[0].toString());
     print(items[0].toString());
   }
@@ -35,11 +35,11 @@ class DbHelper {
                 'FOREIGN KEY(idList) REFERENCES lists(id))');
       }, version: version);
     }
-    return db;
+    return db!;
   }
 
   Future<int> insertList(ShoppingList list) async {
-    int id = await this.db.insert(
+    int id = await this.db!.insert(
           'lists',
           list.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace,
@@ -48,7 +48,7 @@ class DbHelper {
   }
 
   Future<int> insertItem(ListItem item) async {
-    int id = await db.insert(
+    int id = await db!.insert(
       'items',
       item.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
@@ -57,7 +57,7 @@ class DbHelper {
   }
 
   Future<List<ShoppingList>> getLists() async {
-    final List<Map<String, dynamic>> maps = await db.query('lists');
+    final List<Map<String, dynamic>> maps = await db!.query('lists');
     return List.generate(maps.length, (i) {
       return ShoppingList(
         maps[i]['id'],
@@ -69,7 +69,7 @@ class DbHelper {
 
   Future<List<ListItem>> getItems(int idList) async {
     final List<Map<String, dynamic>> maps =
-        await db.query('items', where: 'idList = ?', whereArgs: [idList]);
+        await db!.query('items', where: 'idList = ?', whereArgs: [idList]);
     return List.generate(maps.length, (i) {
       return ListItem(
         maps[i]['id'],
@@ -82,8 +82,8 @@ class DbHelper {
   }
 
 Future<int> deleteList(ShoppingList list) async {
-    int result = await db.delete("items", where: "idList = ?", whereArgs: [list.id]);
-    result = await db.delete("lists", where: "id = ?", whereArgs: [list.id]);
+    int result = await db!.delete("items", where: "idList = ?", whereArgs: [list.id]);
+    result = await db!.delete("lists", where: "id = ?", whereArgs: [list.id]);
     return result;
   }
 
