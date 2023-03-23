@@ -85,14 +85,15 @@ class Picture extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text(
-            Constants.caption_text,
-            style: TextStyle(fontSize: 18),
-          ),
+          // title: const Text(
+          //   Constants.caption_text,
+          //   style: TextStyle(fontSize: 18),
+          // ),
+          title: const Text('Image from ctftime.org'),
           children: [
-            SimpleDialogOption(
-              child: const Text('Image from ctftime.org:'),
-            ),
+            // SimpleDialogOption(
+            //   child: const Text('Image from ctftime.org:'),
+            // ),
             SimpleDialogOption(
               onPressed: onPressed,
               child: Text(
