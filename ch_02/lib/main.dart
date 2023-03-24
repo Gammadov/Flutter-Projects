@@ -78,7 +78,9 @@ class _MyAppState extends State<MyApp> {
                 if (!hasFocus) {
                   setState(
                     () {
-                      _numberFrom = double.parse(_numberController.text);
+                      _numberFrom = _numberController.text.isNotEmpty
+                          ? double.parse(_numberController.text)
+                          : 0;
                       _numberController.text = _numberFrom.toString();
                     },
                   );
