@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'convertertion_app.dart';
+import 'my_conversion_app.dart';
 import 'util/conver_util.dart';
 
-void main() {
-  runApp(
-    const MaterialApp(
-      title: 'Measures Converter',
-      // home: MyApp(),
-      home: MyConversionApp(),
-    ),
-  );
-}
+void main(List<String> args) => runApp(const MyConversionApp());
+
+// void main() {
+//   runApp(
+//     const MaterialApp(
+//       title: 'Measures Converter',
+//       home: MyApp(),
+//     ),
+//   );
+// }
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
