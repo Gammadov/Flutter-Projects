@@ -43,105 +43,116 @@ class _UnitConverterState extends State<UnitConverter> {
     Unit.ounces: 'ounces',
   };
 
-  final TextStyle _inputStyle =
-      TextStyle(fontSize: 20, color: Colors.blue[900]);
+  final TextStyle _normal =
+      const TextStyle(fontSize: 17, fontWeight: FontWeight.normal);
 
-  final TextStyle _labelStyle = TextStyle(
-    fontSize: 24,
-    color: Colors.grey[700],
-  );
+  final TextStyle _medium =
+      const TextStyle(fontSize: 17, fontWeight: FontWeight.w500);
 
   @override
   Widget build(BuildContext context) {
     double sizeX = MediaQuery.of(context).size.width;
-    double sizeY = MediaQuery.of(context).size.height;
-    final spacer = SizedBox(height: sizeY / 40);
+
+    final SizedBox space =
+        SizedBox(height: MediaQuery.of(context).size.height > 340 ? 24 : 12);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Unit Converter'),
+        title: const Text('Unit converter'),
       ),
       body: Container(
         width: sizeX,
-        padding: EdgeInsets.all(sizeX / 20),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: SingleChildScrollView(
-            child: Column(
-          children: [
-            Focus(
-              onFocusChange: (hasFocus) {
-                if (!hasFocus) {
-                  setState(
-                    () {
-                      _inputNumber = _numberController.text.isEmpty
-                          ? 0
-                          : double.parse(_numberController.text);
-                      _numberController.text = _inputNumber.toString();
-                    },
-                  );
-                }
-              },
-              child: TextField(
-                controller: _numberController,
-                // style: _inputStyle,
-                decoration: const InputDecoration(
-                  labelText: 'Value',
-                  // labelStyle:,
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
+          child: Column(
+            children: [
+              Focus(
+                onFocusChange: (hasFocus) {
+                  if (!hasFocus) {
+                    setState(
+                      () {
+                        _inputNumber = _numberController.text.isEmpty
+                            ? 0
+                            : double.parse(_numberController.text);
+                        _numberController.text = _inputNumber.toString();
+                      },
+                    );
+                  }
+                },
+                child: TextField(
+                  controller: _numberController,
+                  style: const TextStyle(fontSize: 24),
+                  decoration: const InputDecoration(
+                    labelText: 'Value',
+                    labelStyle: TextStyle(fontSize: 17),
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                  ),
+                  // keyboardType: TextInputType.number,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.allow(
+                      RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
+                    ),
+                  ],
+                  onTap: () {
+                    _inputNumber = 0;
+                    _numberController.clear();
+                  },
                 ),
-                // keyboardType: TextInputType.number,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
-                inputFormatters: <TextInputFormatter>[
-                  FilteringTextInputFormatter.allow(
-                    RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
+              ),
+              space,
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: MenuAnchor(
+                        builder: (context, controller, child) {
+                          return FilledButton.tonal(
+                            onPressed: () {
+                              if (controller.isOpen) {
+                                controller.close();
+                              } else {
+                                controller.open();
+                              }
+                            },
+                            child: Text(
+                              _measures[_unit].toString(),
+                              style: _medium,
+                            ),
+                          );
+                        },
+                        menuChildren:
+                            List.generate(Unit.values.length, (index) {
+                          final unit = Unit.values[index];
+                          return MenuItemButton(
+                            child: Text(
+                              _measures[unit]!,
+                              style: _medium,
+                            ),
+                            onPressed: () => onUnitChanged(unit),
+                          );
+                        }),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'are',
+                      style: _normal,
+                    ),
                   ),
                 ],
-                onTap: () {
-                  _inputNumber = 0;
-                  _numberController.clear();
-                },
               ),
-            ),
-            spacer,
-            Row(
-              children: [
-                MenuAnchor(
-                  builder: (context, controller, child) {
-                    return FilledButton.tonal(
-                      onPressed: () {
-                        if (controller.isOpen) {
-                          controller.close();
-                        } else {
-                          controller.open();
-                        }
-                      },
-                      child: Text(_measures[_unit].toString()),
-                    );
-                  },
-                  menuChildren: List.generate(Unit.values.length, (index) {
-                    final unit = Unit.values[index];
-                    return MenuItemButton(
-                      child: Text(
-                        _measures[unit]!,
-                        // style: _inputStyle,
-                      ),
-                      onPressed: () => onUnitChanged(unit),
-                    );
-                  }),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Text(
-                    'are',
-                    // style: _labelStyle,
-                  ),
-                ),
-              ],
-            ),
-            spacer,
-            ...convert(measure: _measures[_unit]!),
-          ],
-        )),
+              space,
+              ...answer(measure: _measures[_unit]!, space: space),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -164,17 +175,30 @@ class _UnitConverterState extends State<UnitConverter> {
     });
   }
 
-  List<Widget> convert({required String measure}) {
+  List<Widget> answer({required String measure, required Widget space}) {
     final list = _converter.convert(value: _inputNumber, measure: measure);
-    return List.generate(4, (index) {
-      final int doubleIndex = index * 2;
-      return Row(
-        children: [
-          Text(list[doubleIndex]),
-          const SizedBox(width: 10),
-          Text(list[doubleIndex + 1]),
-        ],
-      );
+    return List.generate(list.length - 1, (index) {
+      if (index.isEven) {
+        return Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(left: 16),
+                child: Text(list[index], style: _normal),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 3,
+              child: Text(list[index + 1], style: _normal),
+            ),
+          ],
+        );
+      } else {
+        return space;
+      }
     });
   }
 }
