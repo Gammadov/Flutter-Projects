@@ -66,90 +66,11 @@ class _UnitConverterState extends State<UnitConverter> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              Focus(
-                onFocusChange: (hasFocus) {
-                  if (!hasFocus) {
-                    setState(
-                      () {
-                        _inputNumber = _numberController.text.isEmpty
-                            ? 0
-                            : double.parse(_numberController.text);
-                        _numberController.text = _inputNumber.toString();
-                      },
-                    );
-                  }
-                },
-                child: TextField(
-                  controller: _numberController,
-                  style: const TextStyle(fontSize: 24),
-                  decoration: const InputDecoration(
-                    labelText: 'Value',
-                    labelStyle: TextStyle(fontSize: 17),
-                    floatingLabelBehavior: FloatingLabelBehavior.always,
-                  ),
-                  // keyboardType: TextInputType.number,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: <TextInputFormatter>[
-                    FilteringTextInputFormatter.allow(
-                      RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
-                    ),
-                  ],
-                  onTap: () {
-                    _inputNumber = 0;
-                    _numberController.clear();
-                  },
-                ),
-              ),
+              textField(),
               space,
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: MenuAnchor(
-                        builder: (context, controller, child) {
-                          return FilledButton.tonal(
-                            onPressed: () {
-                              if (controller.isOpen) {
-                                controller.close();
-                              } else {
-                                controller.open();
-                              }
-                            },
-                            child: Text(
-                              _measures[_unit].toString(),
-                              style: _medium,
-                            ),
-                          );
-                        },
-                        menuChildren:
-                            List.generate(Unit.values.length, (index) {
-                          final unit = Unit.values[index];
-                          return MenuItemButton(
-                            child: Text(
-                              _measures[unit]!,
-                              style: _medium,
-                            ),
-                            onPressed: () => onUnitChanged(unit),
-                          );
-                        }),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    flex: 3,
-                    child: Text(
-                      'are',
-                      style: _normal,
-                    ),
-                  ),
-                ],
-              ),
+              selectMeasure(),
               space,
-              ...answer(measure: _measures[_unit]!, space: space),
+              ...answers(measure: _measures[_unit]!, space: space),
             ],
           ),
         ),
@@ -175,7 +96,92 @@ class _UnitConverterState extends State<UnitConverter> {
     });
   }
 
-  List<Widget> answer({required String measure, required Widget space}) {
+  Widget textField() {
+    return Focus(
+      onFocusChange: (hasFocus) {
+        if (!hasFocus) {
+          setState(
+            () {
+              _inputNumber = _numberController.text.isEmpty
+                  ? 0
+                  : double.parse(_numberController.text);
+              _numberController.text = _inputNumber.toString();
+            },
+          );
+        }
+      },
+      child: TextField(
+        controller: _numberController,
+        style: const TextStyle(fontSize: 24),
+        decoration: const InputDecoration(
+          labelText: 'Value',
+          labelStyle: TextStyle(fontSize: 17),
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+        ),
+        // keyboardType: TextInputType.number,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow(
+            RegExp(r'[0-9]+[.]{0,1}[0-9]*'),
+          ),
+        ],
+        onTap: () {
+          _inputNumber = 0;
+          _numberController.clear();
+        },
+      ),
+    );
+  }
+
+  Widget selectMeasure() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: MenuAnchor(
+              builder: (context, controller, child) {
+                return FilledButton.tonal(
+                  onPressed: () {
+                    if (controller.isOpen) {
+                      controller.close();
+                    } else {
+                      controller.open();
+                    }
+                  },
+                  child: Text(
+                    _measures[_unit].toString(),
+                    style: _medium,
+                  ),
+                );
+              },
+              menuChildren: List.generate(Unit.values.length, (index) {
+                final unit = Unit.values[index];
+                return MenuItemButton(
+                  child: Text(
+                    _measures[unit]!,
+                    style: _medium,
+                  ),
+                  onPressed: () => onUnitChanged(unit),
+                );
+              }),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          flex: 3,
+          child: Text(
+            'are',
+            style: _normal,
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> answers({required String measure, required Widget space}) {
     final list = _converter.convert(value: _inputNumber, measure: measure);
     return List.generate(list.length - 1, (index) {
       if (index.isEven) {
