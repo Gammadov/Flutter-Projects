@@ -38,10 +38,11 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_native_splash: ^2.2.19
 
 flutter_icons:
   android: "launcher_icon"
-  image_path: "assets/icons/piet.png"
+  image_path: "assets/pictures/app_icon.png"
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
