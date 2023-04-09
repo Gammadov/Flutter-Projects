@@ -24,7 +24,6 @@ class CountDownTimer {
   }
 
   Stream<TimerModel> stream() async* {
-
     yield* Stream.periodic(Duration(seconds: 1), (int a) {
       String time;
       if (this._isActive) {
@@ -42,10 +41,12 @@ class CountDownTimer {
   Future readSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     work = prefs.getInt('workTime') == null ? 30 : prefs.getInt('workTime')!;
-    shortBreak = prefs.getInt('shortBreak') == null ? 30 : prefs.getInt('shortBreak')!;
-    longBreak = prefs.getInt('longBreak') == null ? 30 : prefs.getInt('longBreak')!;
+    shortBreak =
+        prefs.getInt('shortBreak') == null ? 30 : prefs.getInt('shortBreak')!;
+    longBreak =
+        prefs.getInt('longBreak') == null ? 30 : prefs.getInt('longBreak')!;
   }
-  
+
   void stopTimer() {
     this._isActive = false;
   }
@@ -56,21 +57,16 @@ class CountDownTimer {
     }
   }
 
-  void startWork() async{
-    await readSettings(); 
+  void startWork() async {
+    await readSettings();
     _arc = 1;
     _time = Duration(minutes: this.work, seconds: 0);
     _fullTime = _time;
   }
 
   void startBreak(bool isShort) {
-
     _arc = 1;
-    _time = Duration(
-      minutes: (isShort) ? shortBreak: longBreak, 
-      seconds: 0);
+    _time = Duration(minutes: (isShort) ? shortBreak : longBreak, seconds: 0);
     _fullTime = _time;
   }
-
-  
 }

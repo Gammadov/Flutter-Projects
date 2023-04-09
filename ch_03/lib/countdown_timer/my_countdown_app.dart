@@ -24,12 +24,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final CountdownTimer _timer = CountdownTimer();
 
-  int _countFrom = 10;
-
   @override
   void dispose() {
+    _timer.dispose();
     super.dispose();
-    _timer.close();
   }
 
   @override
@@ -40,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const Spacer(),
             StreamBuilder(
-                initialData: _countFrom,
+                // initialData: ,
                 stream: _timer.stream,
                 builder: (context, snapshot) {
                   return Text(
@@ -48,14 +46,35 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 70),
                   );
                 }),
-            SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 50),
             FilledButton(
-                onPressed: () {
-                  _timer.countdown(_countFrom);
-                },
-                child: Text('Start Count Down')),
+              onPressed: () {
+                debugPrint('Check');
+                _timer.start(10);
+                debugPrint(_timer._isActive.toString());
+                debugPrint(_timer._count.toString());
+              },
+              // onPressed: () {},
+              child: Text('Start countdown'),
+            ),
+            const SizedBox(height: 30),
+            FilledButton(
+              onPressed: () => _timer.pause(),
+              // onPressed: () {},
+              child: Text('Pause'),
+            ),
+            const SizedBox(height: 30),
+            FilledButton(
+              onPressed: () => _timer.resume(),
+              // onPressed: () {},
+              child: Text('Resume'),
+            ),
+            const SizedBox(height: 30),
+            // FilledButton(
+            //   // onPressed: () => _timer.cancel(),
+            //   onPressed: () {},
+            //   child: Text('Cancel'),
+            // ),
             const Spacer(),
           ],
         ),
@@ -66,31 +85,41 @@ class _HomeScreenState extends State<HomeScreen> {
 
 class CountdownTimer {
   final StreamController<int> _controller = StreamController();
-  bool isBusy = false;
+  bool _isActive = true;
+  int _count = 0;
 
   Stream<int> get stream => _controller.stream;
 
-  void close() => _controller.close();
+  late final Timer _engine;
 
-  void countdown(int countFrom) async {
-    _controller.onResume;
-
-    if (!isBusy) {
-      isBusy = true;
-      int innerCount = countFrom;
-      // debugPrint(DateTime.now().toString());
-      Timer.periodic(Duration(seconds: 1), (timer) {
-        innerCount--;
-        _controller.sink.add(innerCount);
-
-        if (innerCount <= 0) {
-          timer.cancel();
-          // debugPrint(DateTime.now().toString());
-          _controller.sink.add(countFrom);
-          _controller.onPause;
-          isBusy = false;
+  CountdownTimer() {
+    _engine = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_isActive) {
+        if (_count > 0) {
+          _count--;
+          _controller.sink.add(_count);
+        } else {
+          _isActive = false;
         }
-      });
-    }
+      }
+    });
+  }
+
+  void start(int countFrom) {
+    _count = countFrom;
+    _isActive = true;
+  }
+
+  void pause() {
+    _isActive = false;
+  }
+
+  void resume() {
+    _isActive = true;
+  }
+
+  void dispose() {
+    _controller.close();
+    _engine.cancel();
   }
 }
